@@ -1,20 +1,33 @@
-# Reproducible Research: Peer Assessment 1
+```{r, echo=FALSE}
+setwd("C:/Users/Chris/Dropbox/R/RR/PA1")
+```
+Load and summarise the activity data
 
+```{r}
+data = read.csv("activity.csv")
+hist(data$steps)
+summary(data$steps)
+```
 
-## Loading and preprocessing the data
+Looking at 5min intervals.
 
+```{r}
+intervals = aggregate(data[,c("steps","interval")], list(data$interval), mean, na.rm = TRUE)
+plot(intervals$steps,type = "l")
+max = max(intervals$steps)
+maxindex = which.max(intervals$steps)
+interval = intervals$interval[maxindex]
+interval
+```
 
+Repeat by weekend/weekday.
 
-## What is mean total number of steps taken per day?
-
-
-
-## What is the average daily activity pattern?
-
-
-
-## Imputing missing values
-
-
-
-## Are there differences in activity patterns between weekdays and weekends?
+```{r}
+weekdaysD = weekdays(as.Date(data$date))
+weekdays =  as.POSIXlt(data$date)$wday>0 & as.POSIXlt(data$date)$wday<6
+data_week = cbind(data,weekdays)
+byweekday = aggregate(data_week[,c("steps","interval")], list(data_week$interval,data_week$weekdays), mean, na.rm = TRUE)
+par(mfrow=c(2,1)) 
+plot(byweekday[!byweekday$Group.2,c("steps")],type = "l")
+plot(byweekday[byweekday$Group.2,c("steps")],type = "l")
+```
